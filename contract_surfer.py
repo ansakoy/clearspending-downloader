@@ -51,7 +51,7 @@ FST_SUPP_NAME = '1st_supp_name' # наименование первого пос
 FST_SUPP_INN = '1st_supp_inn' # ИНН первого поставщика
 FST_SUPP_KPP = '1st_supp_kpp' # КПП первого поставщика
 NUM_SUPPS = 'num_suppliers' # всего поставщиков
-CONTRACT_STAGE = 'contract_stage' # стадия исполнения контракта (актуально только для 44-ФЗ
+CONTRACT_STAGE = 'contract_stage' # стадия исполнения контракта (актуально только для 44-ФЗ)
 FZ = 'fz' # федеральный закон - 44-ФЗ, 223-ФЗ, до 2014 г. 94-ФЗ
 
 
@@ -189,44 +189,46 @@ class ContractsSurfer(object):
         # Выгрузить данные по продуктам
         target_url = self.construct_api(**kwargs)
         num_pages = self.get_num_pages(target_url)
-        headers_list = [CLEARSPENDING_URL, REGNUM, SIGN_DATE,
-                        PRODUCT_DESCR, OKPD2, OKPD2_NAME, OKPD, OKPD_NAME, OKDP, OKDP_NAME,
-                        SINGLE_PRICE, OKEI, PRODUCT_SUM, QUANTITY,
-                        CUSTOMER_NAME, CUSTOMER_INN, CUSTOMER_KPP,
-                        FST_SUPP_NAME, FST_SUPP_INN, FST_SUPP_KPP, NUM_SUPPS,
-                        CURRENCY, REGION_NAME, CONTRACT_STAGE, FZ]  # Поля для таблицы
-        self.start_csv(headers_list)  # Начало записи таблицы в файл
-        for page in xrange(1, num_pages + 1):
-            contracts = self.get_current_page(target_url, page)
-            for contract in contracts:
-                products = contract.get('products')
-                if products:
-                    for product in products:
-                        contract_info = self.get_contract_info(contract) # Создаем словарь с общими данными контракта
-                        details_by_prod = self.add_products_info(product, contract_info) # Добавляем в этот словарь данные по продукту
-                        self.to_csv(headers_list, details_by_prod)
-        self.stop_csv()  # Конец записи таблицы в файл
-        print 'ГОТОВО'
+        if num_pages:
+            headers_list = [CLEARSPENDING_URL, REGNUM, SIGN_DATE,
+                            PRODUCT_DESCR, OKPD2, OKPD2_NAME, OKPD, OKPD_NAME, OKDP, OKDP_NAME,
+                            SINGLE_PRICE, OKEI, PRODUCT_SUM, QUANTITY,
+                            CUSTOMER_NAME, CUSTOMER_INN, CUSTOMER_KPP,
+                            FST_SUPP_NAME, FST_SUPP_INN, FST_SUPP_KPP, NUM_SUPPS,
+                            CURRENCY, REGION_NAME, CONTRACT_STAGE, FZ]  # Поля для таблицы
+            self.start_csv(headers_list)  # Начало записи таблицы в файл
+            for page in xrange(1, num_pages + 1):
+                contracts = self.get_current_page(target_url, page)
+                for contract in contracts:
+                    products = contract.get('products')
+                    if products:
+                        for product in products:
+                            contract_info = self.get_contract_info(contract) # Создаем словарь с общими данными контракта
+                            details_by_prod = self.add_products_info(product, contract_info) # Добавляем в этот словарь данные по продукту
+                            self.to_csv(headers_list, details_by_prod)
+            self.stop_csv()  # Конец записи таблицы в файл
+            print 'ГОТОВО'
 
     def get_contracts(self, **kwargs):
         # Выгрузить данные по контрактам
         target_url = self.construct_api(**kwargs)
         num_pages = self.get_num_pages(target_url)
-        headers_list = [CLEARSPENDING_URL, REGNUM, SIGN_DATE,
-                       FST_PROD_DESCR, NUM_PRODUCTS,
-                       CUSTOMER_NAME, CUSTOMER_INN, CUSTOMER_KPP,
-                       FST_SUPP_NAME, FST_SUPP_INN, FST_SUPP_KPP, NUM_SUPPS,
-                        CONTRACT_PRICE,
-                       CURRENCY, REGION_NAME, CONTRACT_STAGE, FZ]  # Поля для таблицы
-        self.start_csv(headers_list)  # Начало записи таблицы в файл
-        for page in xrange(1, num_pages + 1):
-            contracts = self.get_current_page(target_url, page)
-            for contract in contracts:
-                contract_info = self.get_contract_info(contract)  # Создаем словарь с общими данными контракта
-                fst_prod_details = self.add_fst_prod_info(contract, contract_info)  # Добавляем в этот словарь данные по первому продукту в списке
-                self.to_csv(headers_list, fst_prod_details) # Записываем строку в таблицу
-        self.stop_csv()  # Конец записи таблицы в файл
-        print 'ГОТОВО'
+        if num_pages:
+            headers_list = [CLEARSPENDING_URL, REGNUM, SIGN_DATE,
+                           FST_PROD_DESCR, NUM_PRODUCTS,
+                           CUSTOMER_NAME, CUSTOMER_INN, CUSTOMER_KPP,
+                           FST_SUPP_NAME, FST_SUPP_INN, FST_SUPP_KPP, NUM_SUPPS,
+                            CONTRACT_PRICE,
+                           CURRENCY, REGION_NAME, CONTRACT_STAGE, FZ]  # Поля для таблицы
+            self.start_csv(headers_list)  # Начало записи таблицы в файл
+            for page in xrange(1, num_pages + 1):
+                contracts = self.get_current_page(target_url, page)
+                for contract in contracts:
+                    contract_info = self.get_contract_info(contract)  # Создаем словарь с общими данными контракта
+                    fst_prod_details = self.add_fst_prod_info(contract, contract_info)  # Добавляем в этот словарь данные по первому продукту в списке
+                    self.to_csv(headers_list, fst_prod_details) # Записываем строку в таблицу
+            self.stop_csv()  # Конец записи таблицы в файл
+            print 'ГОТОВО'
 
     def to_csv(self, headers, data):
         # Преобразовать данные в пригодный для записи в CSV вид, записать строку
