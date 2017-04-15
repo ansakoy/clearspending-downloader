@@ -1,6 +1,22 @@
 # clearspending-downloader
 Download selected contract data from Clearspending.ru API as CSV file
 
+### Возможности
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -o , --output       Название итогового файла CSV
+  -b , --begin        Начало периода в форме дд.мм.гггг
+  -e , --end          Конец периода в форме дд.мм.гггг
+  -i , --inn          ИНН заказчика
+  -k , --kpp          КПП заказчика
+  -r , --region       Код региона заказчика
+  -p , --pricerange   Диапазон цен контрактов, например: 10000-50000
+  -f , --fz           ФЗ, варианты: 94, 44, 223
+  -C, --contracts     Выгрузить данные в формате 1 строка = 1 контракт
+  -P, --products      Выгрузить данные в формате 1 строка = 1 продукт
+
+
 ### Примеры запросов
 
 
